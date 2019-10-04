@@ -36,6 +36,7 @@ class Robot {
   constructor(name, type) {
     this.name = name;
     this.type = type;
+    console.log(`New Bot Created: ${name} the ${type}`);
     this.initializeTasks();
   }
 
@@ -46,11 +47,13 @@ class Robot {
     });
 
     for (let task of this.tasks) {
+      task.completed = false;
       console.log(
-        `In Progress: ${task.description}, eta: ${task.eta / 1000} seconds `
+        `${this.name} has begun: ${task.description}, eta: ${task.eta / 1000} seconds `
       );
       await this.startTask(task);
-      console.log(`Completed`);
+      task.completed = true;
+      console.log(`${this.name} has completed: ${task.description}`);
     }
   }
 
@@ -63,5 +66,3 @@ class Robot {
   }
 
 }
-
-module.exports = Robot;
