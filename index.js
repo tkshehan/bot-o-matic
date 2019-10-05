@@ -43,12 +43,15 @@ const TASKS = [
 
 const robots = [];
 const names = [];
+let $bots;
 
 $(init);
 
 function init() {
+  $bots = $('.js-bots');
   buildTypes();
   buildListeners();
+  setInterval(() => renderBots(), 100);
 }
 
 function buildTypes() {
@@ -66,7 +69,11 @@ function buildListeners() {
   $('form').submit(function(event) {
     event.preventDefault();
     const name = $('#name').val();
-    const type = $('#type').val();
+    let type = $('#type').val();
+    if (type === 'RANDOM') {
+      const index = Math.floor(Math.random() * Object.keys(TYPES).length);
+      type = Object.keys(TYPES)[index];
+    }
     buildNewBot(name, type);
   });
 
@@ -93,7 +100,44 @@ function assignTasks() {
   }
 }
 
-// this.tasks = [...Array(5)].map(() => {
-//   const index = Math.floor(Math.random() * TASKS.length);
-//   return TASKS[index];
-// });
+function renderBots() {
+  const renderList = [];
+
+  let timeLeft = Math.floor(robot.timeLeft);
+  for (let robot of robots) {
+    let classes = 'bot';
+    if (robot.isActive) {
+      classes += ' active'
+    } else {
+      timeLeft = '';
+    }
+
+    const botDiv = $('<div>', {
+      class: classes,
+      html: [
+        $('<div>', {
+          class: 'bot_info',
+          html: [
+            $('<h3>', {
+              text: `${robot.name}`,
+            }),
+            $('<h5>', {
+              text: `${robot.type}`,
+            }),
+          ]
+        }),
+        $('<p>', {
+          class: 'bot_task',
+          text: `${timeLeft} ${robot.currentTask()}`,
+        }),
+        $('<p>', {
+          class: 'bot_completed',
+          text: `${robot.completed.length} / ${robot.completed.length + robot.tasks.length}`
+        }),
+      ],
+    });
+    renderList.push(botDiv);
+  }
+
+  $bots.html(renderList);
+}

@@ -1,0 +1,30 @@
+main {
+  margin: 20px;
+}
+
+.bots {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.bot {
+  border: 1px solid black;
+  margin: 5px;
+  flex-basis: 30%;
+  background-color: lightgray;
+}
+
+.bot_info {
+  display: flex;
+  justify-content: space-between;
+  margin: 0px 10px;
+}
+
+.bot_task, .bot_completed {
+  text-align: center;
+}
+
+.active {
+  background: lightgreen;
+}
