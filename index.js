@@ -43,33 +43,43 @@ const TASKS = [
 
 const robots = [];
 const names = [];
-let $bots;
+let botSection;
 
-$(init);
+const ready = function(fn) {
+  // If document is already loaded, run method
+  if (document.readyState === 'interactive' || document.readyState === 'complete') {
+    return fn();
+  }
+
+  // Otherwise, wait until document is loaded
+  document.addEventListener('DOMContentLoaded', fn, false);
+};
+
+ready(init);
 
 function init() {
-  $bots = $('.js-bots');
+  botSection = document.querySelector('.js-bots');
   buildTypes();
   buildListeners();
   setInterval(() => renderBots(), 100);
 }
 
 function buildTypes() {
-  const $dropBox = $('select');
+  const dropBox = document.querySelector('select');
   for (let type of Object.keys(TYPES)) {
-    const $option = $('<option>', {
-      value: type,
-      text: TYPES[type],
-    });
-    $dropBox.append($option);
+    const option = document.createElement('option');
+    option.classList.add(type);
+    option.innerHTML = TYPES[type];
+    // const option = `<option value="${type}">${TYPES[type]}</option>`;
+    dropBox.appendChild(option);
   }
 }
 
 function buildListeners() {
-  $('form').submit(function(event) {
+  document.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault();
-    const name = $('#name').val();
-    let type = $('#type').val();
+    const name = document.querySelector('#name').value;
+    let type = document.querySelector('#type').value;
     if (type === 'RANDOM') {
       const index = Math.floor(Math.random() * Object.keys(TYPES).length);
       type = Object.keys(TYPES)[index];
@@ -77,7 +87,7 @@ function buildListeners() {
     buildNewBot(name, type);
   });
 
-  $('.js-assign').on('click', assignTasks);
+  document.querySelector('.js-assign').addEventListener('click', assignTasks);
 }
 
 function buildNewBot(name, type) {
@@ -103,41 +113,29 @@ function assignTasks() {
 function renderBots() {
   const renderList = [];
 
-  let timeLeft = Math.floor(robot.timeLeft);
   for (let robot of robots) {
-    let classes = 'bot';
+    let timeLeft = Math.floor(robot.timeLeft);
+    let classNames = 'bot';
     if (robot.isActive) {
-      classes += ' active'
+      classNames += ' active'
     } else {
       timeLeft = '';
     }
 
-    const botDiv = $('<div>', {
-      class: classes,
-      html: [
-        $('<div>', {
-          class: 'bot_info',
-          html: [
-            $('<h3>', {
-              text: `${robot.name}`,
-            }),
-            $('<h5>', {
-              text: `${robot.type}`,
-            }),
-          ]
-        }),
-        $('<p>', {
-          class: 'bot_task',
-          text: `${timeLeft} ${robot.currentTask()}`,
-        }),
-        $('<p>', {
-          class: 'bot_completed',
-          text: `${robot.completed.length} / ${robot.completed.length + robot.tasks.length}`
-        }),
-      ],
-    });
+    const botDiv = (`
+    <div class="${classNames}">
+      <div class="bot_info">
+        <h3>${robot.name}</h3>
+        <h5>${robot.type}</h5>
+      </div>
+      <p class="bot_task">${timeLeft} ${robot.currentTask()} </p>
+      <p class= "bot_completed">
+        ${robot.completed.length} / ${robot.completed.length + robot.tasks.length}
+      </p>
+    </div>
+      `);
     renderList.push(botDiv);
   }
 
-  $bots.html(renderList);
+  botSection.innerHTML = renderList.join('');
 }
