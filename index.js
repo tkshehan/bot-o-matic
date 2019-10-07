@@ -42,7 +42,6 @@ const TASKS = [
 ];
 
 const robots = [];
-const names = [];
 let botSection;
 
 const ready = function(fn) {
@@ -58,7 +57,7 @@ const ready = function(fn) {
 ready(init);
 
 function init() {
-  // keep section to be reused regularly
+  // bind bot section to be reused for rendering
   botSection = document.querySelector('.js-bots');
   buildTypes();
   buildListeners();
@@ -108,7 +107,7 @@ function buildListeners() {
 
 function buildNewBot(name, type) {
   //Check to see if bot of same name already exists
-  if (names.includes(name)) {
+  if (robots.map((bot) => bot.name).includes(name)) {
     console.error('Robot Already Exists');
     return;
   }
@@ -158,7 +157,6 @@ function renderBots() {
 
 function updateBotInfo() {
   const botDivs = document.querySelectorAll('.bot');
-
   for (let div of botDivs) {
     const robot = robots.find((robot) => robot.name === div.dataset.name);
 
@@ -173,14 +171,13 @@ function updateBotInfo() {
     // Update time left on current task
     let timeLeft = '';
     if (robot.isActive) {
-      timeLeft = robot.timeLeft;
+      timeLeft = Math.floor(robot.timeLeft);
     }
     div.querySelector('.js-time-left')
-      .innerHTML = `${Math.floor(timeLeft)} ${robot.currentTask()}`;
+      .innerHTML = `${timeLeft} ${robot.currentTask()}`;
 
     // Update task completion tracking
     div.querySelector('.js-tasks-completed')
       .innerHTML = `${robot.completed.length} / ${robot.completed.length + robot.tasks.length}`;
   }
-
 }
