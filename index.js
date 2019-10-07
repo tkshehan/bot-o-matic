@@ -171,8 +171,12 @@ function updateBotInfo() {
     }
 
     // Update time left on current task
+    let timeLeft = '';
+    if (robot.isActive) {
+      timeLeft = robot.timeLeft;
+    }
     div.querySelector('.js-time-left')
-      .innerHTML = `${Math.floor(robot.timeLeft)} ${robot.currentTask()}`;
+      .innerHTML = `${Math.floor(timeLeft)} ${robot.currentTask()}`;
 
     // Update task completion tracking
     div.querySelector('.js-tasks-completed')
