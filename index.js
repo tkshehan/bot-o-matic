@@ -89,7 +89,7 @@ function buildListeners() {
 
   document.querySelector('.js-assign').addEventListener('click', () => {
     event.preventDefault();
-    robots.forEach(assignTask);
+    robots.forEach((robot) => assignTask(robot));
   });
 }
 
@@ -103,7 +103,7 @@ function buildNewBot(name, type) {
   const newBot = new Robot(name, TYPES[type]);
   robots.push(newBot);
   names.push(name);
-  assignTask(robot, 5);
+  assignTask(newBot, 5);
 }
 
 function assignTask(robot, num = 1) {
