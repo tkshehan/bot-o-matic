@@ -1,5 +1,13 @@
+html, body {
+  font-family: 'Roboto', sans-serif;
+}
+
 main {
   margin: 20px;
+}
+
+form > div {
+  margin-bottom: 5px;
 }
 
 .bots {
@@ -11,6 +19,7 @@ main {
 .bot {
   border: 1px solid black;
   margin: 5px;
+  padding: 5px;
   flex-basis: 30%;
   background-color: lightgray;
 }
@@ -18,7 +27,6 @@ main {
 .bot_info {
   display: flex;
   justify-content: space-between;
-  margin: 0px 10px;
 }
 
 .bot_task, .bot_completed {

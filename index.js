@@ -62,7 +62,7 @@ function init() {
   botSection = document.querySelector('.js-bots');
   buildTypes();
   buildListeners();
-  setInterval(() => renderBots(), 200);
+  setInterval(() => updateBotInfo(), 200);
 }
 
 function buildTypes() {
@@ -101,7 +101,6 @@ function buildListeners() {
       const targetBot = robots.find(
         (bot) => bot.name === event.target.dataset.name
       );
-      console.log(targetBot);
       assignTask(targetBot);
     }
   });
@@ -140,13 +139,13 @@ function renderBots() {
     }
 
     const botDiv = (`
-    <div class="${classNames}">
-      <div class="bot_info" data-name="${robot.name}">
+    <div class="${classNames}" data-name="${robot.name}">
+      <div class="bot_info">
         <h3>${robot.name}</h3>
         <h5>${robot.type}</h5>
       </div>
-      <p class="bot_task">${timeLeft} ${robot.currentTask()} </p>
-      <p class= "bot_completed">
+      <p class="bot_task js-time-left">${timeLeft} ${robot.currentTask()} </p>
+      <p class= "bot_completed js-tasks-completed">
         ${robot.completed.length} / ${robot.completed.length + robot.tasks.length}
       </p>
       <button class="js-single-task-btn" data-name="${robot.name}">Assign(1)</button>
@@ -155,4 +154,29 @@ function renderBots() {
     renderList.push(botDiv);
   }
   botSection.innerHTML = renderList.join('');
+}
+
+function updateBotInfo() {
+  const botDivs = document.querySelectorAll('.bot');
+
+  for (let div of botDivs) {
+    const robot = robots.find((robot) => robot.name === div.dataset.name);
+
+    // Match div class to robot activity
+    if (robot.isActive && !div.classList.contains('active')) {
+      div.classList.add('active');
+    }
+    if (!robot.isActive && div.classList.contains('active')) {
+      div.classList.remove('active');
+    }
+
+    // Update time left on current task
+    div.querySelector('.js-time-left')
+      .innerHTML = `${Math.floor(robot.timeLeft)} ${robot.currentTask()}`;
+
+    // Update task completion tracking
+    div.querySelector('.js-tasks-completed')
+      .innerHTML = `${robot.completed.length} / ${robot.completed.length + robot.tasks.length}`;
+  }
+
 }
