@@ -58,10 +58,11 @@ const ready = function(fn) {
 ready(init);
 
 function init() {
+  // keep section to be reused regularly
   botSection = document.querySelector('.js-bots');
   buildTypes();
   buildListeners();
-  setInterval(() => renderBots(), 100);
+  setInterval(() => renderBots(), 200);
 }
 
 function buildTypes() {
@@ -70,12 +71,12 @@ function buildTypes() {
     const option = document.createElement('option');
     option.classList.add(type);
     option.innerHTML = TYPES[type];
-    // const option = `<option value="${type}">${TYPES[type]}</option>`;
     dropBox.appendChild(option);
   }
 }
 
 function buildListeners() {
+  // Add Bot button
   document.querySelector('form').addEventListener('submit', function(event) {
     event.preventDefault();
     const name = document.querySelector('#name').value;
@@ -85,11 +86,24 @@ function buildListeners() {
       type = Object.keys(TYPES)[index];
     }
     buildNewBot(name, type);
+    renderBots();
   });
 
+  // AssignAll(1) button
   document.querySelector('.js-assign').addEventListener('click', () => {
     event.preventDefault();
     robots.forEach((robot) => assignTask(robot));
+  });
+
+  // Assign(1) button
+  botSection.addEventListener('click', (event) => {
+    if (event.target.classList.contains('js-single-task-btn')) {
+      const targetBot = robots.find(
+        (bot) => bot.name === event.target.dataset.name
+      );
+      console.log(targetBot);
+      assignTask(targetBot);
+    }
   });
 }
 
@@ -127,7 +141,7 @@ function renderBots() {
 
     const botDiv = (`
     <div class="${classNames}">
-      <div class="bot_info">
+      <div class="bot_info" data-name="${robot.name}">
         <h3>${robot.name}</h3>
         <h5>${robot.type}</h5>
       </div>
@@ -135,10 +149,10 @@ function renderBots() {
       <p class= "bot_completed">
         ${robot.completed.length} / ${robot.completed.length + robot.tasks.length}
       </p>
+      <button class="js-single-task-btn" data-name="${robot.name}">Assign(1)</button>
     </div>
       `);
     renderList.push(botDiv);
   }
-
   botSection.innerHTML = renderList.join('');
 }
