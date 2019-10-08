@@ -94,15 +94,29 @@ function buildListeners() {
     robots.forEach((robot) => assignTask(robot));
   });
 
-  // Assign(1) button
+  // Close Modal button
+  document.querySelector('.js-modal-close').addEventListener('click', () => {
+    document.querySelector('.js-modal').classList.add('hidden');
+  });
+
+  //Event delegation for bot divs
   botSection.addEventListener('click', (event) => {
+    // Single Task Button
     if (event.target.classList.contains('js-single-task-btn')) {
-      const targetBot = robots.find(
-        (bot) => bot.name === event.target.dataset.name
-      );
+      const targetBot = getRobotByName(event.target.dataset.name);
       assignTask(targetBot);
     }
+
+    // Task Log Button
+    if (event.target.classList.contains('js-task-log-btn')) {
+      const targetBot = getRobotByName(event.target.dataset.name);
+      renderTaskList(targetBot);
+    }
   });
+
+  function getRobotByName(name) {
+    return robots.find((bot) => bot.name === name);
+  }
 }
 
 function buildNewBot(name, type) {
@@ -114,7 +128,6 @@ function buildNewBot(name, type) {
 
   const newBot = new Robot(name, TYPES[type]);
   robots.push(newBot);
-  names.push(name);
   assignTask(newBot, 5);
 }
 
@@ -147,7 +160,14 @@ function renderBots() {
       <p class= "bot_completed js-tasks-completed">
         ${robot.completed.length} / ${robot.completed.length + robot.tasks.length}
       </p>
-      <button class="js-single-task-btn" data-name="${robot.name}">Assign(1)</button>
+      <div class="bot-controls">
+        <button class="js-single-task-btn" data-name="${robot.name}">
+        Assign(1)
+        </button>
+        <button class="js-task-log-btn" data-name="${robot.name}">
+        Task Log
+        </button>
+      </div>
     </div>
       `);
     renderList.push(botDiv);
@@ -180,4 +200,19 @@ function updateBotInfo() {
     div.querySelector('.js-tasks-completed')
       .innerHTML = `${robot.completed.length} / ${robot.completed.length + robot.tasks.length}`;
   }
+}
+
+function renderTaskList(bot) {
+  const queue = bot.tasks.map(task => task.description).join('\n');
+  const completed = bot.completed.map((task) => task.description).join('\n');
+
+  document.querySelector('.js-queue').innerHTML = (`
+    <h5>Queue</h5> 
+    <pre>${queue}</pre>
+  `);
+  document.querySelector('.js-completed').innerHTML = (`
+    <h5>Completed</h5>
+    <pre>${completed}</pre>
+  `);
+  document.querySelector('.js-modal').classList.remove('hidden');
 }
